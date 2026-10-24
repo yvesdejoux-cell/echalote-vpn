@@ -1,0 +1,19 @@
+# Build
+bin/
+obj/
+artifacts/
+publish/
+
+# Visual Studio / Rider / VS Code
+.vs/
+.idea/
+*.user
+*.suo
+.vscode/
+
+# Test results
+TestResults/
+*.trx
+
+# Binaires externes téléchargés à la compilation (étape 2)
+third_party/bin/

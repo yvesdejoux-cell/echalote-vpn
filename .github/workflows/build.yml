@@ -1,0 +1,46 @@
+name: build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-dotnet@v5
+        with:
+          global-json-file: global.json
+
+      - name: Fetch and verify Tor
+        shell: pwsh
+        run: ./scripts/fetch-deps.ps1
+
+      - name: Restore
+        run: dotnet restore OnionGuard.slnx
+
+      - name: Build
+        run: dotnet build OnionGuard.slnx --configuration Release --no-restore
+
+      - name: Test
+        run: dotnet test OnionGuard.slnx --configuration Release --no-build --verbosity normal
+
+      - name: Publish
+        shell: pwsh
+        run: |
+          dotnet publish src/OnionGuard.Service/OnionGuard.Service.csproj -c Release -r win-x64 --self-contained -o publish/OnionGuard/service
+          dotnet publish src/OnionGuard.App/OnionGuard.App.csproj -c Release -r win-x64 --self-contained -o publish/OnionGuard/app
+          if (-not (Test-Path publish/OnionGuard/service/tor-bundle/tor/tor.exe)) { throw 'tor.exe manquant dans la publication.' }
+
+      - uses: actions/upload-artifact@v5
+        with:
+          name: OnionGuard-win-x64
+          path: publish/OnionGuard
+          retention-days: 14

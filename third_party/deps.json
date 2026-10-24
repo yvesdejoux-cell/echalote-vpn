@@ -1,0 +1,32 @@
+{
+  "tor": {
+    "version": "15.0.26",
+    "fileName": "tor-expert-bundle-windows-x86_64-{version}.tar.gz",
+    "baseUrls": [
+      "https://dist.torproject.org/torbrowser/{version}",
+      "https://archive.torproject.org/tor-package-archive/torbrowser/{version}"
+    ],
+    "sha256": "c1988c701de2f24f7d098d1d6d7f507b58f27740d097f29c246e0524d639b252",
+    "signingKeyFingerprint": "EF6E286DDA85EA2A4BA7DE684E2C6E8793298290",
+    "signingKeyUrl": "https://keys.openpgp.org/vks/v1/by-fingerprint/EF6E286DDA85EA2A4BA7DE684E2C6E8793298290"
+  },
+  "wintun": {
+    "version": "0.14.1",
+    "fileName": "wintun-{version}.zip",
+    "baseUrls": [
+      "https://www.wintun.net/builds"
+    ],
+    "sha256": "07c256185d6ee3652e09fa55c0b673e2624b565e02c4b9091c79ca7d2f24ef51",
+    "dllPath": "wintun/bin/amd64/wintun.dll",
+    "authenticodeSubject": "CN=WireGuard LLC"
+  },
+  "tun2socks": {
+    "version": "2.7.0",
+    "fileName": "tun2socks-windows-amd64.zip",
+    "baseUrls": [
+      "https://github.com/xjasonlyu/tun2socks/releases/download/v{version}"
+    ],
+    "sha256": "c5d46e9452f6c9cc7c15ab9158d6d6a0169ceecd6bca019ce476b49337d2be43",
+    "exePath": "tun2socks-windows-amd64.exe"
+  }
+}

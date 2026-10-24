@@ -1,0 +1,19 @@
+OnionGuard — composants tiers
+=========================
+
+OnionGuard est distribué sous GPL-3.0-or-later (voir LICENSE.txt). Il embarque les composants
+suivants, chacun sous sa propre licence :
+
+Tor 0.4.9 (Tor Expert Bundle 15.0.26) et lyrebird
+  https://www.torproject.org — licence BSD à 3 clauses (Tor), BSD (lyrebird), avec leurs
+  dépendances OpenSSL, libevent et zlib. Textes complets : service\tor-bundle\docs\
+
+Wintun 0.14.1
+  https://www.wintun.net — WireGuard LLC. Le pilote signé est redistribuable selon les
+  conditions de service\tunnel\LICENSE-wintun.txt.
+
+tun2socks 2.7.0
+  https://github.com/xjasonlyu/tun2socks — GPL-3.0 (même licence que OnionGuard, LICENSE.txt).
+
+.NET 10 (runtime embarqué)
+  https://dotnet.microsoft.com — licence MIT.

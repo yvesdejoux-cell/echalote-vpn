@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/OnionGuard.Core/OnionGuard.Core.csproj" />
+    <Project Path="src/OnionGuard.Service/OnionGuard.Service.csproj" />
+    <Project Path="src/OnionGuard.App/OnionGuard.App.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/OnionGuard.Core.Tests/OnionGuard.Core.Tests.csproj" />
+  </Folder>
+</Solution>

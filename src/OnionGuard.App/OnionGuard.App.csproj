@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <!-- NotifyIcon pour l'icône près de l'horloge ; types WinForms toujours qualifiés. -->
+    <UseWindowsForms>true</UseWindowsForms>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <RootNamespace>OnionGuard.App</RootNamespace>
+    <AssemblyName>OnionGuard</AssemblyName>
+    <ApplicationIcon>Assets\OnionGuard.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Using Remove="System.Windows.Forms" />
+    <Using Remove="System.Drawing" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\OnionGuard.ico" />
+    <Resource Include="Assets\logo-*.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\OnionGuard.Core\OnionGuard.Core.csproj" />
+  </ItemGroup>
+
+</Project>

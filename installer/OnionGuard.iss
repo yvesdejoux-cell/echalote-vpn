@@ -2,7 +2,7 @@
 ;   iscc installer\OnionGuard.iss
 ; Résultat : publish\installer\OnionGuard-Setup-<version>.exe
 
-#define AppVersion "0.8.1"
+#define AppVersion "0.8.2"
 #define ServiceName "OnionGuard"
 
 [Setup]
@@ -10,7 +10,7 @@ AppId={{B415F038-C02F-488D-AD5D-D9AD20733569}
 AppName=OnionGuard
 AppVerName=OnionGuard {#AppVersion} — Routage Onion global
 AppVersion={#AppVersion}
-AppPublisher=Yves Dejoux
+AppPublisher=ptidej
 AppPublisherURL=https://github.com/yvesdejoux-cell/vpn-tor
 DefaultDirName={autopf}\OnionGuard
 DefaultGroupName=OnionGuard

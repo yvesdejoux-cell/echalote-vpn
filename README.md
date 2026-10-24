@@ -6,7 +6,7 @@ trafic du système** par le réseau Tor, à la manière d'un VPN.
 OnionGuard n'est ni développé ni soutenu par le Tor Project ; il utilise le logiciel Tor. Il
 s'appelait TorVpn jusqu'au 25/10/2026.
 
-> Statut : **étape 7, installateur**. OnionGuard s'installe avec `OnionGuard-Setup-0.8.1.exe` (service
+> Statut : **étape 7, installateur**. OnionGuard s'installe avec `OnionGuard-Setup-0.8.2.exe` (service
 > sous SYSTEM, icône près de l'horloge). La fenêtre OnionGuard connecte et déconnecte, affiche l'état et
 > le pays de sortie, demande une nouvelle identité et règle le pays de sortie, le kill switch,
 > le réseau local et les ponts obfs4 (intégrés ou personnalisés). Une fois connecté, le trafic TCP IPv4 et le DNS de Windows passent par Tor ;
@@ -53,7 +53,7 @@ UDP / IPv6     → bloqués
 
 ## Installer
 
-`OnionGuard-Setup-0.8.1.exe` (administrateur) installe OnionGuard dans `C:\Program Files\OnionGuard`, crée le
+`OnionGuard-Setup-0.8.2.exe` (administrateur) installe OnionGuard dans `C:\Program Files\OnionGuard`, crée le
 service Windows **OnionGuard** (compte SYSTEM, démarrage automatique, redémarré s'il s'arrête) et,
 au choix, lance l'icône près de l'horloge à l'ouverture de session. La désinstallation arrête
 le service, retire filtres et règle DNS (`--reset-network`), supprime le service et, si on le

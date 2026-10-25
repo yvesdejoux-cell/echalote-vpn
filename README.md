@@ -1,168 +1,112 @@
-# Échalote VPN — client Windows
+<p align="center">
+  <img src="src/EchaloteVpn.App/Assets/logo-128.png" width="96" alt="">
+</p>
 
-**Routage Onion global** (*System-wide Onion Router*) : client Windows qui fait passer **tout le
-trafic du système** par le réseau Tor, à la manière d'un VPN.
+<h1 align="center">Échalote VPN</h1>
 
-Échalote VPN n'est ni développé ni soutenu par le Tor Project ; il utilise le logiciel Tor. Il s'est
-appelé TorVpn, puis brièvement OnionGuard (nom déjà pris par un autre projet lié à Tor).
+<p align="center">
+  <strong>Faites passer tout le trafic de votre PC Windows par le réseau Tor, en un clic.</strong><br>
+  Gratuit, libre, sans publicité ni abonnement.
+</p>
 
-> Statut : **étape 7, installateur**. Échalote VPN s'installe avec `EchaloteVpn-Setup-0.9.0.exe` (service
-> sous SYSTEM, icône près de l'horloge). La fenêtre Échalote VPN connecte et déconnecte, affiche l'état et
-> le pays de sortie, demande une nouvelle identité et règle le pays de sortie, le kill switch,
-> le réseau local et les ponts obfs4 (intégrés ou personnalisés). Une fois connecté, le trafic TCP IPv4 et le DNS de Windows passent par Tor ;
-> le kill switch bloque tout le reste (IPv6, UDP, DNS vers la box), et tout trafic direct quand
-> Tor ou le tunnel est coupé.
+<p align="center">
+  <a href="https://github.com/yvesdejoux-cell/echalote-vpn/releases/latest"><img src="https://img.shields.io/github/v/release/yvesdejoux-cell/echalote-vpn?label=version" alt="Version"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/licence-GPL--3.0-blue" alt="Licence GPL-3.0"></a>
+  <img src="https://img.shields.io/badge/Windows-10%20%7C%2011-0078D4" alt="Windows 10 et 11">
+  <a href="https://ko-fi.com/ptidej"><img src="https://img.shields.io/badge/Ko--fi-soutenir-FF5E5B?logo=ko-fi&logoColor=white" alt="Ko-fi"></a>
+</p>
 
-> **Plus d'Internet après un plantage ?** Les filtres du kill switch restent en place, même après
-> un redémarrage du PC. Dans un PowerShell **administrateur**, dans le dossier `service` :
-> `.\EchaloteVpn.Service.exe --reset-network`
+<p align="center">
+  <a href="https://github.com/yvesdejoux-cell/echalote-vpn/releases/latest"><strong>⬇ Télécharger Échalote VPN pour Windows</strong></a>
+</p>
 
-## Architecture
+<p align="center">
+  <img src="docs/screenshots/fenetre.png" width="340" alt="Fenêtre d'Échalote VPN">
+</p>
 
-```
-┌──────────────────┐   IPC (named pipe)   ┌──────────────────────────────┐
-│ Interface (user) │ ◄──────────────────► │ Service Windows (SYSTEM)     │
-│ EchaloteVpn.App (WPF) │                      │ EchaloteVpn.Service               │
-│ - Connecter      │                      │  ├─ lance et surveille tor   │
-│ - État, pays     │                      │  ├─ carte Wintun             │
-│ - Nouvelle IP    │                      │  ├─ tun2socks                │
-│ - Bridges        │                      │  ├─ routes + DNS             │
-└──────────────────┘                      │  └─ kill switch (pare-feu)   │
-                                          └──────────────────────────────┘
-Trafic Windows → Wintun → tun2socks → SOCKS5 Tor (9050) → réseau Tor
-Requêtes DNS   → règle NRPT → DNSPort Tor (127.66.0.1:53)
-UDP / IPv6     → bloqués
-```
+## Ce que fait Échalote VPN
 
-| Projet | Rôle |
-| --- | --- |
-| `src/EchaloteVpn.Core` | Réglages et contrats IPC partagés |
-| `src/EchaloteVpn.Service` | Service Windows avec les droits administrateur |
-| `src/EchaloteVpn.App` | Interface WPF |
-| `tests/EchaloteVpn.Core.Tests` | Tests unitaires (xUnit) |
-
-## Feuille de route
-
-1. Squelette : solution .NET 10, CI Windows
-2. Moteur Tor : lancement de `tor.exe`, bootstrap, port de contrôle
-3. Tunnel : Wintun, tun2socks, routes, exclusion du trafic de `tor.exe`
-4. DNS et kill switch : DNS via Tor, blocage UDP/IPv6, coupure si Tor tombe
-5. Interface : connexion, état, pays de sortie, nouvelle identité, réglages
-6. Ponts : obfs4 intégrés ou personnalisés (Snowflake et meek non pris en charge, voir plus bas)
-7. Installateur (Inno Setup), service sous SYSTEM, icône près de l'horloge, tests de fuite
+- **Tout passe par Tor** : navigateurs, applications, mises à jour… comme avec un VPN, mais
+  à travers le réseau Tor. Les sites voient l'adresse d'un relais Tor, pas la vôtre, et votre
+  fournisseur d'accès ne voit pas quels sites vous visitez.
+- **Kill switch** : si Tor se coupe, plus rien ne sort de votre PC, même en cas de plantage. Pas de
+  fuite d'adresse IP, de DNS, d'IPv6 ni de WebRTC.
+- **Choix du pays de sortie** et **nouvelle identité** (nouvelle adresse) en un clic.
+- **Ponts obfs4** pour se connecter quand Tor est bloqué sur votre réseau (pays censurés,
+  réseaux d'entreprise ou d'école).
+- **Discret** : une icône près de l'horloge, qui démarre avec Windows si vous le souhaitez.
 
 ## Installer
 
-`EchaloteVpn-Setup-0.9.0.exe` (administrateur) installe Échalote VPN dans `C:\Program Files\EchaloteVpn`, crée le
-service Windows **EchaloteVpn** (compte SYSTEM, démarrage automatique, redémarré s'il s'arrête) et,
-au choix, lance l'icône près de l'horloge à l'ouverture de session. La désinstallation arrête
-le service, retire filtres et règle DNS (`--reset-network`), supprime le service et, si on le
-demande, les réglages de `C:\ProgramData\EchaloteVpn`. Le journal du service est dans l'observateur
-d'événements (Application, source EchaloteVpn).
+1. Téléchargez `EchaloteVpn-Setup-x.y.z.exe` sur la
+   [page des versions](https://github.com/yvesdejoux-cell/echalote-vpn/releases/latest).
+2. Lancez-le. **Windows SmartScreen peut afficher un avertissement**, car l'installateur n'est pas
+   encore signé : cliquez sur **Informations complémentaires**, puis **Exécuter quand même**.
+3. Acceptez la demande de droits administrateur, puis suivez l'assistant.
 
-L'installateur n'est pas signé : Windows SmartScreen peut avertir au premier lancement.
+Windows 10 ou 11, 64 bits. Rien d'autre à installer : Tor est inclus. Si vous aviez installé
+TorVpn ou OnionGuard (anciens noms d'Échalote VPN), l'installateur les remplace.
 
-## Compiler
+## Utiliser
 
-Prérequis : Windows et le SDK .NET 10.
+1. Ouvrez Échalote VPN (icône près de l'horloge, ou menu Démarrer).
+2. Cliquez sur **Connecter**. Après quelques secondes, la fenêtre affiche **Connecté via Tor** et
+   le pays de sortie.
+3. Pour vérifier : ouvrez https://check.torproject.org dans votre navigateur.
+4. **Déconnecter** rend la connexion normale.
+
+Fermer la fenêtre ne coupe pas la connexion : Échalote VPN reste près de l'horloge (clic droit
+sur l'icône pour le menu). Seul **Déconnecter** coupe le passage par Tor.
+
+**Réglages** : pays de sortie, kill switch, accès au réseau local (box, imprimante, NAS) et ponts.
+Si la connexion n'aboutit pas, choisissez **Ponts obfs4 intégrés**, ou collez vos propres ponts
+obtenus sur https://bridges.torproject.org.
+
+> Désactivez tout autre VPN avant de vous connecter (Mullvad : désactivez aussi le
+> « lockdown mode »).
+
+## Limites, à lire
+
+- **Moins anonyme que le Tor Browser.** Vos navigateurs et applications habituels laissent des
+  traces qui permettent de vous reconnaître (comptes connectés, cookies, empreinte du navigateur).
+  Pour un anonymat fort, utilisez le [Tor Browser](https://www.torproject.org/download/).
+- **Plus lent** qu'une connexion normale : le trafic traverse trois relais dans le monde.
+- **Pas d'UDP** : les appels vidéo et la VoIP, les jeux en ligne ou le BitTorrent ne passent pas.
+- Les sites en `.onion` ne s'ouvrent que dans le Tor Browser.
+- Certains sites bloquent ou soumettent à des captchas les connexions venant de Tor.
+
+## En cas de problème
+
+**Plus d'Internet après un plantage ?** Le kill switch protège même après un redémarrage. Ouvrez
+PowerShell **en administrateur** et tapez :
 
 ```powershell
-./scripts/fetch-deps.ps1   # télécharge et vérifie Tor, Wintun et tun2socks (PowerShell 7, gpg de Git for Windows)
-dotnet build EchaloteVpn.slnx
-dotnet test EchaloteVpn.slnx
-./scripts/publish.ps1      # versions autonomes (.NET embarqué) dans publish/EchaloteVpn
-iscc installer/EchaloteVpn.iss  # installateur dans publish/installer (Inno Setup 6)
+& "C:\Program Files\EchaloteVpn\service\EchaloteVpn.Service.exe" --reset-network
 ```
 
-## Tester sans compiler
-
-Chaque PR produit un zip `EchaloteVpn-win-x64` (page de la PR, onglet **Checks**, puis **Artifacts**).
-Il contient `service\EchaloteVpn.Service.exe` (avec Tor) et `app\EchaloteVpn.exe`, sans rien à installer.
-
-### Utiliser Échalote VPN
-
-Tant que l'installateur n'existe pas (étape 7), le service se lance à la main :
-
-1. Déconnecter tout autre VPN (Mullvad : désactiver aussi le « lockdown mode »).
-2. Ouvrir PowerShell **en administrateur** dans le dossier `service`, puis taper `.\EchaloteVpn.Service.exe`.
-   Le service attend l'interface ; laisser cette fenêtre ouverte.
-3. Lancer `app\EchaloteVpn.exe`, sans droits administrateur, puis cliquer sur **Connecter**.
-4. `Ctrl+C` dans la fenêtre du service l'arrête, ainsi que Tor et le tunnel.
-
-Les réglages sont dans `C:\ProgramData\EchaloteVpn\settings.json` (modifiable seulement par les
-administrateurs, l'interface passe par le service). Si le service s'arrête pendant une
-connexion, il la reprend tout seul au démarrage suivant ; le kill switch bloque le trafic en
-attendant. Sinon, au démarrage, il retire ce qu'un plantage aurait laissé.
-
-### Tester le tunnel
-
-Créer la carte Wintun et poser des routes demande les **droits administrateur**. Sans eux, Tor
-démarre quand même, et le journal signale toutes les 30 s que le tunnel est indisponible.
-
-1. Déconnecter tout autre VPN (Mullvad : désactiver aussi le « lockdown mode »).
-2. Lancer le service et l'interface comme ci-dessus, puis cliquer sur **Connecter**.
-3. Attendre « Connecté via Tor » dans la fenêtre (`Tunnel actif` dans le journal du service).
-4. Dans un autre PowerShell : `curl.exe -4 https://check.torproject.org/api/ip` doit répondre
-   `"IsTor":true`. Le `-4` évite d'attendre l'échec de l'IPv6, que le kill switch bloque.
-5. `Get-DnsClientNrptRule` montre une règle `.` vers `127.66.0.1`, et `Resolve-DnsName example.com`
-   répond.
-6. **Déconnecter** dans la fenêtre, puis `route print -4` : les routes `0.0.0.0/1`
-   (masque `128.0.0.0`) et `128.0.0.0/1` ont disparu, la carte `EchaloteVpn` aussi, et
-   `Get-DnsClientNrptRule` ne montre plus de règle EchaloteVpn.
-
-Fonctionnement : la carte `EchaloteVpn` reçoit l'adresse `10.66.0.1/30` et les routes `0.0.0.0/1` et
-`128.0.0.0/1`, plus précises que la route par défaut de Windows, qui reste en place. `tor.exe`
-se lie à l'adresse de la carte physique (`OutboundBindAddress`) : ses propres connexions sortent par
-elle et ne repassent pas dans le tunnel. `tun2socks` tourne dans un Job Object : s'il meurt avec
-le service, Windows supprime la carte et ses routes.
-
-DNS : Tor écoute en `127.66.0.1:53`, et une règle NRPT (table de résolution de Windows) pour le
-domaine `.`, donc tous les noms, y envoie toutes les requêtes ; Windows n'interroge plus la box.
-Limites du DNS de Tor : seulement les requêtes A, AAAA et PTR (pas MX, TXT ni SRV), et seulement
-en UDP. Windows refuse lui-même de résoudre les noms en `.onion` : pour ces sites, utiliser le
-Tor Browser.
-
-Kill switch : des filtres WFP (le moteur du pare-feu de Windows), dans une sous-couche EchaloteVpn
-prioritaire, posés au démarrage du service avant Tor et retirés en dernier à l'arrêt. Ils
-n'autorisent que la boucle locale, `tor.exe`, le TCP qui part de la carte `EchaloteVpn` et le DHCP ;
-le réseau local (box, imprimante, NAS) est bloqué tant que le réglage `AllowLocalNetwork` est
-faux. Ils sont persistants : un plantage laisse le PC bloqué, voir `--reset-network` plus haut.
-Le mode « lockdown » de Mullvad doit être désactivé : son propre blocage l'emporterait.
-
-Ponts : si Tor est bloqué sur votre réseau, choisir « Ponts obfs4 intégrés » (ceux du bundle de
-Tor), ou « Ponts obfs4 personnalisés » et coller une ligne `obfs4 …` par pont, obtenue sur
-https://bridges.torproject.org (au moins deux ponts, conseille Tor). `lyrebird.exe` rejoint les
-ponts lui-même : le service ajoute une route /32 vers chaque pont par la passerelle de la carte
-physique, et le kill switch autorise `lyrebird.exe`. **Snowflake et meek ne sont pas pris en
-charge** : ils ont besoin de DNS et d'UDP hors du tunnel, ce que Windows ne permet de réserver à
-un seul programme qu'avec un pilote réseau.
-
-Profils réseau : tun2socks donne un nouveau GUID à la carte `EchaloteVpn` à chaque lancement, et
-Windows lui crée un nouveau profil réseau (« EchaloteVpn 2 », « EchaloteVpn 3 »…). Le service les retire à
-la fin de chaque vie du tunnel, et `--reset-network` aussi.
-
-## Binaires externes
-
-`tor.exe` (Tor Expert Bundle), `wintun.dll` et `tun2socks.exe` ne sont **pas** stockés dans ce dépôt.
-Ils sont téléchargés à la compilation par `scripts/fetch-deps.ps1`, depuis leurs sources officielles,
-dans les versions figées par `third_party/deps.json`. Pour Tor, l'archive doit porter une signature GPG
-de la clé des développeurs du Tor Browser (`EF6E 286D DA85 EA2A 4BA7 DE68 4E2C 6E87 9329 8290`) **et**
-correspondre à l'empreinte SHA-256 figée. Pour Wintun, l'archive doit correspondre à son empreinte
-SHA-256 figée et `wintun.dll` porter une signature Authenticode valide de WireGuard LLC. Pour
-`tun2socks`, qui ne signe pas ses fichiers, seule compte l'empreinte SHA-256 figée. `tun2socks` est sous GPL-3.0, Wintun et Tor sous
-leurs propres licences, qui seront reprises dans l'installateur.
-
-## Avertissement sur l'anonymat
-
-Faire passer tout le système par Tor protège **moins** que le Tor Browser : les navigateurs et
-applications ordinaires laissent des empreintes qui permettent de vous reconnaître. Pour un
-anonymat fort, utilisez le Tor Browser. Tor ne transporte ni l'UDP, ni la VoIP, ni les jeux en ligne.
+**Un bug, une question ?** Ouvrez une
+[issue](https://github.com/yvesdejoux-cell/echalote-vpn/issues).
 
 ## Soutenir le projet
 
-Échalote VPN est gratuit. Pour soutenir son développement, un don ponctuel est possible sur
-[Ko-fi](https://ko-fi.com/ptidej) (lien aussi dans la fenêtre et dans le menu de l'icône).
+Échalote VPN est gratuit et le restera. Si l'application vous rend service, un don ponctuel sur
+[Ko-fi](https://ko-fi.com/ptidej) aide à la faire vivre.
+
+## In English
+
+**Échalote VPN** routes all Windows traffic through the Tor network, like a VPN: kill switch
+(no IP, DNS, IPv6 or WebRTC leaks), exit-country choice, new identity and obfs4 bridges.
+Free and open source (GPL-3.0), Windows 10/11 64-bit.
+[Download the installer](https://github.com/yvesdejoux-cell/echalote-vpn/releases/latest)
+(SmartScreen may warn: *More info* → *Run anyway*). It is weaker than Tor Browser for anonymity;
+use Tor Browser when anonymity matters.
+
+## Pour les développeurs
+
+Architecture, compilation et fonctionnement interne :
+[docs/DEVELOPPEMENT.md](docs/DEVELOPPEMENT.md).
 
 ## Licence
 
-GPL-3.0-or-later. Voir [LICENSE](LICENSE).
+GPL-3.0-or-later, voir [LICENSE](LICENSE). Échalote VPN n'est ni développé ni soutenu par le Tor
+Project ; il utilise le logiciel Tor. « Tor » est une marque du Tor Project, Inc.

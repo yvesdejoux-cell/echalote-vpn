@@ -24,23 +24,23 @@ jobs:
         run: ./scripts/fetch-deps.ps1
 
       - name: Restore
-        run: dotnet restore OnionGuard.slnx
+        run: dotnet restore EchaloteVpn.slnx
 
       - name: Build
-        run: dotnet build OnionGuard.slnx --configuration Release --no-restore
+        run: dotnet build EchaloteVpn.slnx --configuration Release --no-restore
 
       - name: Test
-        run: dotnet test OnionGuard.slnx --configuration Release --no-build --verbosity normal
+        run: dotnet test EchaloteVpn.slnx --configuration Release --no-build --verbosity normal
 
       - name: Publish
         shell: pwsh
         run: |
-          dotnet publish src/OnionGuard.Service/OnionGuard.Service.csproj -c Release -r win-x64 --self-contained -o publish/OnionGuard/service
-          dotnet publish src/OnionGuard.App/OnionGuard.App.csproj -c Release -r win-x64 --self-contained -o publish/OnionGuard/app
-          if (-not (Test-Path publish/OnionGuard/service/tor-bundle/tor/tor.exe)) { throw 'tor.exe manquant dans la publication.' }
+          dotnet publish src/EchaloteVpn.Service/EchaloteVpn.Service.csproj -c Release -r win-x64 --self-contained -o publish/EchaloteVpn/service
+          dotnet publish src/EchaloteVpn.App/EchaloteVpn.App.csproj -c Release -r win-x64 --self-contained -o publish/EchaloteVpn/app
+          if (-not (Test-Path publish/EchaloteVpn/service/tor-bundle/tor/tor.exe)) { throw 'tor.exe manquant dans la publication.' }
 
       - uses: actions/upload-artifact@v5
         with:
-          name: OnionGuard-win-x64
-          path: publish/OnionGuard
+          name: EchaloteVpn-win-x64
+          path: publish/EchaloteVpn
           retention-days: 14

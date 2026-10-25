@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/EchaloteVpn.Core/EchaloteVpn.Core.csproj" />
+    <Project Path="src/EchaloteVpn.Service/EchaloteVpn.Service.csproj" />
+    <Project Path="src/EchaloteVpn.App/EchaloteVpn.App.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/EchaloteVpn.Core.Tests/EchaloteVpn.Core.Tests.csproj" />
+  </Folder>
+</Solution>

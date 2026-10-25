@@ -60,7 +60,7 @@ for size in (512, 256, 128, 96, 64, 48):
     square.resize((size, size), Image.LANCZOS).save(f'{out_dir}/logo-{size}.png')
 
 icon_sizes = [(16, 16), (20, 20), (24, 24), (32, 32), (40, 40), (48, 48), (64, 64), (128, 128), (256, 256)]
-square.resize((256, 256), Image.LANCZOS).save(f'{out_dir}/OnionGuard.ico', sizes=icon_sizes)
+square.resize((256, 256), Image.LANCZOS).save(f'{out_dir}/EchaloteVpn.ico', sizes=icon_sizes)
 
 # Aperçu sur fond clair et sur fond sombre, pour contrôler le détourage.
 preview = Image.new('RGBA', (2 * 300, 300), (255, 255, 255, 255))

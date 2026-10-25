@@ -1,13 +1,13 @@
-# OnionGuard
+# Échalote VPN — client Windows
 
 **Routage Onion global** (*System-wide Onion Router*) : client Windows qui fait passer **tout le
 trafic du système** par le réseau Tor, à la manière d'un VPN.
 
-OnionGuard n'est ni développé ni soutenu par le Tor Project ; il utilise le logiciel Tor. Il
-s'appelait TorVpn jusqu'au 25/10/2026.
+Échalote VPN n'est ni développé ni soutenu par le Tor Project ; il utilise le logiciel Tor. Il s'est
+appelé TorVpn, puis brièvement OnionGuard (nom déjà pris par un autre projet lié à Tor).
 
-> Statut : **étape 7, installateur**. OnionGuard s'installe avec `OnionGuard-Setup-0.8.2.exe` (service
-> sous SYSTEM, icône près de l'horloge). La fenêtre OnionGuard connecte et déconnecte, affiche l'état et
+> Statut : **étape 7, installateur**. Échalote VPN s'installe avec `EchaloteVpn-Setup-0.9.0.exe` (service
+> sous SYSTEM, icône près de l'horloge). La fenêtre Échalote VPN connecte et déconnecte, affiche l'état et
 > le pays de sortie, demande une nouvelle identité et règle le pays de sortie, le kill switch,
 > le réseau local et les ponts obfs4 (intégrés ou personnalisés). Une fois connecté, le trafic TCP IPv4 et le DNS de Windows passent par Tor ;
 > le kill switch bloque tout le reste (IPv6, UDP, DNS vers la box), et tout trafic direct quand
@@ -15,14 +15,14 @@ s'appelait TorVpn jusqu'au 25/10/2026.
 
 > **Plus d'Internet après un plantage ?** Les filtres du kill switch restent en place, même après
 > un redémarrage du PC. Dans un PowerShell **administrateur**, dans le dossier `service` :
-> `.\OnionGuard.Service.exe --reset-network`
+> `.\EchaloteVpn.Service.exe --reset-network`
 
 ## Architecture
 
 ```
 ┌──────────────────┐   IPC (named pipe)   ┌──────────────────────────────┐
 │ Interface (user) │ ◄──────────────────► │ Service Windows (SYSTEM)     │
-│ OnionGuard.App (WPF) │                      │ OnionGuard.Service               │
+│ EchaloteVpn.App (WPF) │                      │ EchaloteVpn.Service               │
 │ - Connecter      │                      │  ├─ lance et surveille tor   │
 │ - État, pays     │                      │  ├─ carte Wintun             │
 │ - Nouvelle IP    │                      │  ├─ tun2socks                │
@@ -36,10 +36,10 @@ UDP / IPv6     → bloqués
 
 | Projet | Rôle |
 | --- | --- |
-| `src/OnionGuard.Core` | Réglages et contrats IPC partagés |
-| `src/OnionGuard.Service` | Service Windows avec les droits administrateur |
-| `src/OnionGuard.App` | Interface WPF |
-| `tests/OnionGuard.Core.Tests` | Tests unitaires (xUnit) |
+| `src/EchaloteVpn.Core` | Réglages et contrats IPC partagés |
+| `src/EchaloteVpn.Service` | Service Windows avec les droits administrateur |
+| `src/EchaloteVpn.App` | Interface WPF |
+| `tests/EchaloteVpn.Core.Tests` | Tests unitaires (xUnit) |
 
 ## Feuille de route
 
@@ -53,12 +53,12 @@ UDP / IPv6     → bloqués
 
 ## Installer
 
-`OnionGuard-Setup-0.8.2.exe` (administrateur) installe OnionGuard dans `C:\Program Files\OnionGuard`, crée le
-service Windows **OnionGuard** (compte SYSTEM, démarrage automatique, redémarré s'il s'arrête) et,
+`EchaloteVpn-Setup-0.9.0.exe` (administrateur) installe Échalote VPN dans `C:\Program Files\EchaloteVpn`, crée le
+service Windows **EchaloteVpn** (compte SYSTEM, démarrage automatique, redémarré s'il s'arrête) et,
 au choix, lance l'icône près de l'horloge à l'ouverture de session. La désinstallation arrête
 le service, retire filtres et règle DNS (`--reset-network`), supprime le service et, si on le
-demande, les réglages de `C:\ProgramData\OnionGuard`. Le journal du service est dans l'observateur
-d'événements (Application, source OnionGuard).
+demande, les réglages de `C:\ProgramData\EchaloteVpn`. Le journal du service est dans l'observateur
+d'événements (Application, source EchaloteVpn).
 
 L'installateur n'est pas signé : Windows SmartScreen peut avertir au premier lancement.
 
@@ -68,28 +68,28 @@ Prérequis : Windows et le SDK .NET 10.
 
 ```powershell
 ./scripts/fetch-deps.ps1   # télécharge et vérifie Tor, Wintun et tun2socks (PowerShell 7, gpg de Git for Windows)
-dotnet build OnionGuard.slnx
-dotnet test OnionGuard.slnx
-./scripts/publish.ps1      # versions autonomes (.NET embarqué) dans publish/OnionGuard
-iscc installer/OnionGuard.iss  # installateur dans publish/installer (Inno Setup 6)
+dotnet build EchaloteVpn.slnx
+dotnet test EchaloteVpn.slnx
+./scripts/publish.ps1      # versions autonomes (.NET embarqué) dans publish/EchaloteVpn
+iscc installer/EchaloteVpn.iss  # installateur dans publish/installer (Inno Setup 6)
 ```
 
 ## Tester sans compiler
 
-Chaque PR produit un zip `OnionGuard-win-x64` (page de la PR, onglet **Checks**, puis **Artifacts**).
-Il contient `service\OnionGuard.Service.exe` (avec Tor) et `app\OnionGuard.exe`, sans rien à installer.
+Chaque PR produit un zip `EchaloteVpn-win-x64` (page de la PR, onglet **Checks**, puis **Artifacts**).
+Il contient `service\EchaloteVpn.Service.exe` (avec Tor) et `app\EchaloteVpn.exe`, sans rien à installer.
 
-### Utiliser OnionGuard
+### Utiliser Échalote VPN
 
 Tant que l'installateur n'existe pas (étape 7), le service se lance à la main :
 
 1. Déconnecter tout autre VPN (Mullvad : désactiver aussi le « lockdown mode »).
-2. Ouvrir PowerShell **en administrateur** dans le dossier `service`, puis taper `.\OnionGuard.Service.exe`.
+2. Ouvrir PowerShell **en administrateur** dans le dossier `service`, puis taper `.\EchaloteVpn.Service.exe`.
    Le service attend l'interface ; laisser cette fenêtre ouverte.
-3. Lancer `app\OnionGuard.exe`, sans droits administrateur, puis cliquer sur **Connecter**.
+3. Lancer `app\EchaloteVpn.exe`, sans droits administrateur, puis cliquer sur **Connecter**.
 4. `Ctrl+C` dans la fenêtre du service l'arrête, ainsi que Tor et le tunnel.
 
-Les réglages sont dans `C:\ProgramData\OnionGuard\settings.json` (modifiable seulement par les
+Les réglages sont dans `C:\ProgramData\EchaloteVpn\settings.json` (modifiable seulement par les
 administrateurs, l'interface passe par le service). Si le service s'arrête pendant une
 connexion, il la reprend tout seul au démarrage suivant ; le kill switch bloque le trafic en
 attendant. Sinon, au démarrage, il retire ce qu'un plantage aurait laissé.
@@ -107,10 +107,10 @@ démarre quand même, et le journal signale toutes les 30 s que le tunnel est in
 5. `Get-DnsClientNrptRule` montre une règle `.` vers `127.66.0.1`, et `Resolve-DnsName example.com`
    répond.
 6. **Déconnecter** dans la fenêtre, puis `route print -4` : les routes `0.0.0.0/1`
-   (masque `128.0.0.0`) et `128.0.0.0/1` ont disparu, la carte `OnionGuard` aussi, et
-   `Get-DnsClientNrptRule` ne montre plus de règle OnionGuard.
+   (masque `128.0.0.0`) et `128.0.0.0/1` ont disparu, la carte `EchaloteVpn` aussi, et
+   `Get-DnsClientNrptRule` ne montre plus de règle EchaloteVpn.
 
-Fonctionnement : la carte `OnionGuard` reçoit l'adresse `10.66.0.1/30` et les routes `0.0.0.0/1` et
+Fonctionnement : la carte `EchaloteVpn` reçoit l'adresse `10.66.0.1/30` et les routes `0.0.0.0/1` et
 `128.0.0.0/1`, plus précises que la route par défaut de Windows, qui reste en place. `tor.exe`
 se lie à l'adresse de la carte physique (`OutboundBindAddress`) : ses propres connexions sortent par
 elle et ne repassent pas dans le tunnel. `tun2socks` tourne dans un Job Object : s'il meurt avec
@@ -122,9 +122,9 @@ Limites du DNS de Tor : seulement les requêtes A, AAAA et PTR (pas MX, TXT ni S
 en UDP. Windows refuse lui-même de résoudre les noms en `.onion` : pour ces sites, utiliser le
 Tor Browser.
 
-Kill switch : des filtres WFP (le moteur du pare-feu de Windows), dans une sous-couche OnionGuard
+Kill switch : des filtres WFP (le moteur du pare-feu de Windows), dans une sous-couche EchaloteVpn
 prioritaire, posés au démarrage du service avant Tor et retirés en dernier à l'arrêt. Ils
-n'autorisent que la boucle locale, `tor.exe`, le TCP qui part de la carte `OnionGuard` et le DHCP ;
+n'autorisent que la boucle locale, `tor.exe`, le TCP qui part de la carte `EchaloteVpn` et le DHCP ;
 le réseau local (box, imprimante, NAS) est bloqué tant que le réglage `AllowLocalNetwork` est
 faux. Ils sont persistants : un plantage laisse le PC bloqué, voir `--reset-network` plus haut.
 Le mode « lockdown » de Mullvad doit être désactivé : son propre blocage l'emporterait.
@@ -137,8 +137,8 @@ physique, et le kill switch autorise `lyrebird.exe`. **Snowflake et meek ne sont
 charge** : ils ont besoin de DNS et d'UDP hors du tunnel, ce que Windows ne permet de réserver à
 un seul programme qu'avec un pilote réseau.
 
-Profils réseau : tun2socks donne un nouveau GUID à la carte `OnionGuard` à chaque lancement, et
-Windows lui crée un nouveau profil réseau (« OnionGuard 2 », « OnionGuard 3 »…). Le service les retire à
+Profils réseau : tun2socks donne un nouveau GUID à la carte `EchaloteVpn` à chaque lancement, et
+Windows lui crée un nouveau profil réseau (« EchaloteVpn 2 », « EchaloteVpn 3 »…). Le service les retire à
 la fin de chaque vie du tunnel, et `--reset-network` aussi.
 
 ## Binaires externes
@@ -160,7 +160,7 @@ anonymat fort, utilisez le Tor Browser. Tor ne transporte ni l'UDP, ni la VoIP, 
 
 ## Soutenir le projet
 
-OnionGuard est gratuit. Pour soutenir son développement, un don ponctuel est possible sur
+Échalote VPN est gratuit. Pour soutenir son développement, un don ponctuel est possible sur
 [Ko-fi](https://ko-fi.com/ptidej) (lien aussi dans la fenêtre et dans le menu de l'icône).
 
 ## Licence

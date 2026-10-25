@@ -4,21 +4,21 @@
     Publie le service et l'interface en versions autonomes (.NET embarqué), pour l'installateur.
 
 .DESCRIPTION
-    Résultat dans publish/OnionGuard/service et publish/OnionGuard/app, comme dans la CI. Vérifie que
+    Résultat dans publish/EchaloteVpn/service et publish/EchaloteVpn/app, comme dans la CI. Vérifie que
     Tor, lyrebird, tun2socks et Wintun sont bien à côté du service : lancer scripts/fetch-deps.ps1
     avant.
 #>
 [CmdletBinding()]
 param(
-    [string] $OutDir = (Join-Path $PSScriptRoot '..' 'publish' 'OnionGuard')
+    [string] $OutDir = (Join-Path $PSScriptRoot '..' 'publish' 'EchaloteVpn')
 )
 
 $ErrorActionPreference = 'Stop'
 $root = Join-Path $PSScriptRoot '..'
 
 foreach ($project in @(
-        @{ Path = 'src/OnionGuard.Service/OnionGuard.Service.csproj'; Out = 'service' },
-        @{ Path = 'src/OnionGuard.App/OnionGuard.App.csproj'; Out = 'app' })) {
+        @{ Path = 'src/EchaloteVpn.Service/EchaloteVpn.Service.csproj'; Out = 'service' },
+        @{ Path = 'src/EchaloteVpn.App/EchaloteVpn.App.csproj'; Out = 'app' })) {
     $target = Join-Path $OutDir $project.Out
     if (Test-Path $target) { Remove-Item $target -Recurse -Force }
     dotnet publish (Join-Path $root $project.Path) -c Release -r win-x64 --self-contained -o $target
@@ -26,13 +26,13 @@ foreach ($project in @(
 }
 
 $required = @(
-    'service/OnionGuard.Service.exe',
+    'service/EchaloteVpn.Service.exe',
     'service/tor-bundle/tor/tor.exe',
     'service/tor-bundle/tor/pluggable_transports/lyrebird.exe',
     'service/tor-bundle/tor/pluggable_transports/pt_config.json',
     'service/tunnel/tun2socks.exe',
     'service/tunnel/wintun.dll',
-    'app/OnionGuard.exe'
+    'app/EchaloteVpn.exe'
 )
 foreach ($file in $required) {
     if (-not (Test-Path (Join-Path $OutDir $file))) { throw "$file manquant dans la publication." }

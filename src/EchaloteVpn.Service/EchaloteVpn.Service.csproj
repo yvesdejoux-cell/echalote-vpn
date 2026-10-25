@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk.Worker">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <RootNamespace>EchaloteVpn.Service</RootNamespace>
+    <!-- Code généré par [LibraryImport] pour les appels à iphlpapi.dll et kernel32.dll -->
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="10.0.0" />
+    <PackageReference Include="System.Management" Version="10.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EchaloteVpn.Core\EchaloteVpn.Core.csproj" />
+  </ItemGroup>
+
+  <!-- Tor Expert Bundle téléchargé et vérifié par scripts/fetch-deps.ps1 -->
+  <ItemGroup Condition="Exists('$(MSBuildThisFileDirectory)..\..\third_party\bin\tor\tor\tor.exe')">
+    <None Include="$(MSBuildThisFileDirectory)..\..\third_party\bin\tor\**\*" LinkBase="tor-bundle" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <!-- Wintun et tun2socks téléchargés et vérifiés par scripts/fetch-deps.ps1.
+       wintun.dll doit être à côté de tun2socks.exe, qui la charge depuis son propre dossier. -->
+  <ItemGroup Condition="Exists('$(MSBuildThisFileDirectory)..\..\third_party\bin\tun2socks\tun2socks.exe')">
+    <None Include="$(MSBuildThisFileDirectory)..\..\third_party\bin\tun2socks\tun2socks.exe" Link="tunnel\tun2socks.exe" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+  <ItemGroup Condition="Exists('$(MSBuildThisFileDirectory)..\..\third_party\bin\wintun\wintun.dll')">
+    <None Include="$(MSBuildThisFileDirectory)..\..\third_party\bin\wintun\wintun.dll;&#xA;                   $(MSBuildThisFileDirectory)..\..\third_party\bin\wintun\LICENSE-wintun.txt" LinkBase="tunnel" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>

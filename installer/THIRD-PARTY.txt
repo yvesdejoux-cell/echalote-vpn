@@ -1,7 +1,7 @@
-OnionGuard — composants tiers
-=========================
+﻿Échalote VPN — composants tiers
+============================
 
-OnionGuard est distribué sous GPL-3.0-or-later (voir LICENSE.txt). Il embarque les composants
+Échalote VPN est distribué sous GPL-3.0-or-later (voir LICENSE.txt). Il embarque les composants
 suivants, chacun sous sa propre licence :
 
 Tor 0.4.9 (Tor Expert Bundle 15.0.26) et lyrebird
@@ -13,7 +13,7 @@ Wintun 0.14.1
   conditions de service\tunnel\LICENSE-wintun.txt.
 
 tun2socks 2.7.0
-  https://github.com/xjasonlyu/tun2socks — GPL-3.0 (même licence que OnionGuard, LICENSE.txt).
+  https://github.com/xjasonlyu/tun2socks — GPL-3.0 (même licence que Échalote VPN, LICENSE.txt).
 
 .NET 10 (runtime embarqué)
   https://dotnet.microsoft.com — licence MIT.

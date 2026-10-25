@@ -87,7 +87,9 @@ public sealed class Tun2SocksProcess(TunnelOptions options, ILogger<Tun2SocksPro
             }
             if (DateTime.UtcNow > deadline)
             {
-                throw new TimeoutException($"La carte {options.DeviceName} n'est pas apparue.");
+                throw new TimeoutException(
+                    $"La carte {options.DeviceName} n'est pas apparue : redémarrez le PC, " +
+                    "Windows bloque parfois la création des cartes réseau.");
             }
             await Task.Delay(250, cancellationToken);
         }

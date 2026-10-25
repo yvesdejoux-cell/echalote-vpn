@@ -2,7 +2,7 @@
 ;   iscc installer\EchaloteVpn.iss
 ; Résultat : publish\installer\EchaloteVpn-Setup-<version>.exe
 
-#define AppVersion "0.9.0"
+#define AppVersion "0.9.1"
 #define ServiceName "EchaloteVpn"
 
 [Setup]
@@ -11,7 +11,7 @@ AppName=Échalote VPN
 AppVerName=Échalote VPN {#AppVersion} — Client Windows
 AppVersion={#AppVersion}
 AppPublisher=ptidej
-AppPublisherURL=https://github.com/yvesdejoux-cell/vpn-tor
+AppPublisherURL=https://github.com/yvesdejoux-cell/echalote-vpn
 DefaultDirName={autopf}\EchaloteVpn
 DefaultGroupName=Échalote VPN
 DisableProgramGroupPage=yes
